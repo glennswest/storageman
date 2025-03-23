@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebSite">
+
+<head>
+  <title>StorageManager | Targets</title>
+
+<link href="./css/tabulator.min.css" rel="stylesheet">
+ <script type="text/javascript" src="./js/tabulator.min.js"></script>
+</head>
+
+<body>
+<div id="example-table"></div>
+
+<script type="text/javascript">
+
+	var table = new Tabulator("#example-table", {
+            ajaxURL:"./api/v1/devices",
+	    height:205, // set height of table (optional)
+	    layout:"fitColumns", //fit columns to width of table (optional)
+	    autoColumns:true
+	});
+
+	//trigger an alert message when the row is clicked
+	table.on("rowClick", function(e, row){ 
+		alert("Row " + row.getData().id + " Clicked!!!!");
+	});
+</script>
+</body>
+
+
+
+</html>
+
+
+
