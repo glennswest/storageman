@@ -1,28 +1,19 @@
-from sqlalchemy import create_engine
-from typing import List
-from typing import Optional
-from sqlalchemy import ForeignKey
-from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
-import socket
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from dotenv import load_dotenv, dotenv_values
+import os
 
-engine = create_engine('rqlite+pyrqlite://localhost:4001/', echo=True)
+app = Flask(__name__)
+load_dotenv()
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 
-class Base(DeclarativeBase):
-      pass
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-class Node(Base):
-      __tablename__ = 'node'
-
-      id: Mapped[int] = mapped_column(primary_key=True)
-      name: Mapped[str] = mapped_column(String(30))
-      ip:   Mapped[str] = mapped_column(String)
-      enable: Mapped[bool] = mapped_column(unique=False,default=False)
-      alive:  Mapped[bool] = mapped_column(unique=False,default=False)
-
-Base.metadata.create_all(engine)
-with Session(engine) as session:
-     thenode = Node(name=socket.getfqdn()),
+class Node(db.Model):
+      id     = db.Column(db.Integer, primary_key=True)
+      name   = db.Column(db.String(128),index=True)
+      ip     = db.Column(db.String(32),index=True)
+      enable = db.Column(db.Boolean(), default=False)
+      alive  = db.Column(db.Boolean(), default=False)
